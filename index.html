@@ -78,14 +78,21 @@ td, th {
 
 /* MOBILE */
 @media (max-width: 768px) {
-  body { flex-direction: column; }
   .sidebar {
+    position: relative;
     width: 100%;
     height: auto;
     display: flex;
     overflow-x: auto;
   }
-  .nav-btn { flex: 0 0 auto; }
+
+  .main {
+    margin-left: 0;
+  }
+
+  .nav-btn {
+    flex: 0 0 auto;
+  }
 }
 </style>
 </head>
