@@ -360,6 +360,22 @@ function updateAll(){
   cpmEl = document.getElementById("cpm");
   cpmEl.innerText = cpm.toFixed(2);
 }
+function saveRouteAsLoad(i) {
+  const r = routes[i];
+
+  loads.push({
+    name: `${r.origin} → ${r.destination}`,
+    pay: Number(r.rate),
+    miles: Number(r.miles)
+  });
+
+  localStorage.setItem("loads", JSON.stringify(loads));
+
+  renderLoads();
+  updateAll();
+
+  alert("Route saved as load");
+}
 
 /* INIT */
 renderLoads();
