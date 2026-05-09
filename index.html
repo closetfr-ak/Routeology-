@@ -6,129 +6,140 @@
 <title>Dispatch System</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #0f172a;
-  color: #e2e8f0;
-  display: flex;
+*{
+  box-sizing:border-box;
 }
 
-/* SIDEBAR */
-.sidebar {
-  width: 220px;
-  background: #111827;
-  height: 100vh;
-  padding: 20px;
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#0f172a;
+  color:#e2e8f0;
 }
 
-.nav-btn {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  background: #1f2937;
-  border: none;
-  color: white;
-  text-align: left;
-  border-radius: 8px;
-  cursor: pointer;
-}
-.menu-toggle{
-  display:none;
-  position:fixed;
-  top:10px;
-  left:10px;
-  z-index:1000;
-  background:#38bdf8;
-  border:none;
-  padding:10px;
-  border-radius:8px;
-}
-
-@media (max-width:768px){
-
-  .menu-toggle{
-    display:block;
-  }
-
-  .sidebar{
-    position:fixed;
-    left:-250px;
-    top:0;
-    width:220px;
-    height:100%;
-    transition:.3s;
-    z-index:999;
-  }
-
-  .sidebar.active{
-    left:0;
-  }
-
-  .main{
-    margin-left:0 !important;
-    padding-top:60px;
-  }
-}
-
-/* MAIN */
-.main {
-  flex: 1;
-  padding: 20px;
-}
-
-.card {
-  background: #1f2937;
-  padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 15px;
-}
-
-input {
-  width: 100%;
-  padding: 8px;
-  margin: 6px 0 10px;
-  border-radius: 6px;
-  border: none;
-}
-
-button.action {
-  background: #38bdf8;
-  border: none;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.hidden { display: none; }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-td, th {
-  padding: 8px;
-  border-bottom: 1px solid #334155;
-}
-
-/* MOBILE */
-@media (max-width: 768px) {
+/* MOBILE MENU BUTTON */
 .menu-toggle{
   display:none;
   position:fixed;
   top:15px;
   left:15px;
-  z-index:1001;
+  z-index:2000;
   background:#38bdf8;
+  color:white;
   border:none;
-  padding:12px;
+  padding:12px 14px;
   border-radius:10px;
-  font-size:18px;
+  font-size:20px;
   cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.3);
 }
 
+/* SIDEBAR */
+.sidebar{
+  position:fixed;
+  top:0;
+  left:0;
+  width:230px;
+  height:100vh;
+  background:#111827;
+  padding:20px;
+  overflow-y:auto;
+  z-index:1500;
+}
+
+/* NAV BUTTONS */
+.nav-btn{
+  width:100%;
+  padding:14px;
+  margin-bottom:10px;
+  background:#1f2937;
+  border:none;
+  color:white;
+  text-align:left;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:15px;
+  transition:.2s ease;
+}
+
+.nav-btn:hover{
+  background:#334155;
+}
+
+/* MAIN CONTENT */
+.main{
+  margin-left:230px;
+  min-height:100vh;
+  padding:20px;
+}
+
+/* CARDS */
+.card{
+  background:#1f2937;
+  padding:18px;
+  border-radius:14px;
+  margin-bottom:18px;
+  box-shadow:0 4px 14px rgba(0,0,0,.2);
+}
+
+/* INPUTS */
+input{
+  width:100%;
+  padding:12px;
+  margin:6px 0 12px;
+  border:none;
+  border-radius:8px;
+  background:#0f172a;
+  color:white;
+  font-size:15px;
+}
+
+/* BUTTONS */
+button.action{
+  background:#38bdf8;
+  color:white;
+  border:none;
+  padding:12px 16px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
+  transition:.2s ease;
+}
+
+button.action:hover{
+  opacity:.9;
+}
+
+/* TABLES */
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+td, th{
+  padding:12px 8px;
+  border-bottom:1px solid #334155;
+  text-align:left;
+}
+
+/* HIDDEN SECTIONS */
+.hidden{
+  display:none;
+}
+
+/* SMALL ACTION BUTTONS */
+table button{
+  margin-right:6px;
+  margin-top:4px;
+  padding:7px 10px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  background:#334155;
+  color:white;
+}
+
+/* MOBILE */
 @media (max-width:768px){
 
   .menu-toggle{
@@ -136,15 +147,9 @@ td, th {
   }
 
   .sidebar{
-    position:fixed;
-    left:-260px;
-    top:0;
-    width:240px;
-    height:100vh;
-    background:#111827;
-    transition:0.3s ease;
-    z-index:1000;
-    overflow-y:auto;
+    left:-250px;
+    transition:.3s ease;
+    width:230px;
     padding-top:70px;
   }
 
@@ -153,15 +158,24 @@ td, th {
   }
 
   .main{
-    margin-left:0 !important;
+    margin-left:0;
     width:100%;
-    padding-top:70px;
+    padding:70px 15px 20px;
   }
 
-  .nav-btn{
+  .card{
+    padding:15px;
+  }
+
+  td, th{
+    font-size:14px;
+    padding:10px 6px;
+  }
+
+  table button{
+    display:block;
     width:100%;
-    text-align:left;
-    margin-bottom:10px;
+    margin-bottom:6px;
   }
 }
 </style>
