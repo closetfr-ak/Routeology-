@@ -86,10 +86,41 @@ td, th {
   <button class="nav-btn" onclick="show('drivers')">Drivers 👤</button>
   <button class="nav-btn" onclick="show('fuel')">Fuel ⛽</button>
   <button class="nav-btn" onclick="show('earnings')">Earnings 💰</button>
+  <button class="nav-btn" onclick="show('routes')">Routes 🗺️</button>
 </div>
 
 <!-- MAIN -->
 <div class="main">
+<div id="routes" class="hidden">
+
+  <div class="card">
+    <h3>Create Load / Route</h3>
+
+    <input id="origin" placeholder="Origin (City, State)"/>
+    <input id="destination" placeholder="Destination (City, State)"/>
+    <input id="routeMiles" type="number" placeholder="Miles"/>
+    <input id="rate" type="number" placeholder="Rate ($)"/>
+    <input id="notes" placeholder="Notes (optional)"/>
+
+    <button class="action" onclick="addRoute()">Save Route</button>
+  </div>
+
+  <div class="card">
+    <h3>Route Board</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Route</th>
+          <th>Miles</th>
+          <th>Rate</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="routeTable"></tbody>
+    </table>
+  </div>
+
+</div>
 
 <!-- DASHBOARD -->
 <div id="dashboard">
@@ -168,6 +199,66 @@ td, th {
 
 <script>
 
+let routes = JSON.parse(localStorage.getItem("routes")) || [];
+
+/* ADD ROUTE */
+function addRoute() {
+  const route = {
+    origin: origin.value,
+    destination: destination.value,
+    miles: Number(miles.value),
+    rate: Number(rate.value),
+    notes: notes.value
+  };
+
+  routes.push(route);
+  localStorage.setItem("routes", JSON.stringify(routes));
+
+  renderRoutes();
+}
+
+/* DISPLAY ROUTES */
+function renderRoutes() {
+  const table = document.getElementById("routeTable");
+
+  table.innerHTML = routes.map((r, i) => `
+    <tr>
+      <td>${r.origin} → ${r.destination}</td>
+      <td>${r.miles}</td>
+      <td>$${r.rate}</td>
+      <td>
+        <button onclick="copyRoute(${i})">Copy</button>
+        <button onclick="openMap(${i})">Map</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+/* COPY LOAD SHEET */
+function copyRoute(i) {
+  const r = routes[i];
+
+  const text =
+`LOAD SHEET
+Origin: ${r.origin}
+Destination: ${r.destination}
+Miles: ${r.miles}
+Rate: $${r.rate}
+Notes: ${r.notes || "None"}`;
+
+  navigator.clipboard.writeText(text);
+  alert("Copied to clipboard");
+}
+
+/* GOOGLE MAPS NAVIGATION */
+function openMap(i) {
+  const r = routes[i];
+
+  const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(r.origin)}&destination=${encodeURIComponent(r.destination)}&travelmode=driving`;
+
+  window.open(url, "_blank");
+}
+
 /* STORAGE */
 let loads = JSON.parse(localStorage.getItem("loads")) || [];
 let drivers = JSON.parse(localStorage.getItem("drivers")) || [];
@@ -175,7 +266,7 @@ let fuel = JSON.parse(localStorage.getItem("fuel")) || [];
 
 /* NAV */
 function show(tab){
-  ["dashboard","loads","drivers","fuel","earnings"].forEach(t=>{
+  ["dashboard","loads","drivers","fuel","earnings","routes"].forEach(t=>{
     document.getElementById(t).classList.add("hidden");
   });
   document.getElementById(tab).classList.remove("hidden");
@@ -264,6 +355,7 @@ function updateAll(){
 renderLoads();
 renderDrivers();
 renderFuel();
+renderRoutes();
 updateAll();
 
 </script>
