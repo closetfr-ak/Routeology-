@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dispatch System</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0f172a;
+  color: #e2e8f0;
+  display: flex;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 220px;
+  background: #111827;
+  height: 100vh;
+  padding: 20px;
+}
+
+.nav-btn {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  background: #1f2937;
+  border: none;
+  color: white;
+  text-align: left;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* MAIN */
+.main {
+  flex: 1;
+  padding: 20px;
+}
+
+.card {
+  background: #1f2937;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin: 6px 0 10px;
+  border-radius: 6px;
+  border: none;
+}
+
+button.action {
+  background: #38bdf8;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.hidden { display: none; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td, th {
+  padding: 8px;
+  border-bottom: 1px solid #334155;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  body { flex-direction: column; }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    display: flex;
+    overflow-x: auto;
+  }
+  .nav-btn { flex: 0 0 auto; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <button class="nav-btn" onclick="show('dashboard')">Dashboard</button>
+  <button class="nav-btn" onclick="show('routes')">Routes 🗺️</button>
+  <button class="nav-btn" onclick="show('loads')">Loads 🚚</button>
+  <button class="nav-btn" onclick="show('drivers')">Drivers 👤</button>
+  <button class="nav-btn" onclick="show('fuel')">Fuel ⛽</button>
+  <button class="nav-btn" onclick="show('earnings')">Earnings 💰</button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="card">
+    <h2>Dispatch Overview</h2>
+    <p>Loads: <span id="tLoads">0</span></p>
+    <p>Drivers: <span id="tDrivers">0</span></p>
+    <p>Fuel Cost: $<span id="tFuel">0</span></p>
+    <p>Net Profit: $<span id="tEarn">0</span></p>
+  </div>
+</div>
+
+<!-- ROUTES -->
+<div id="routes" class="hidden">
+  <div class="card">
+    <h3>Create Route</h3>
+
+    <input id="origin" placeholder="Origin"/>
+    <input id="destination" placeholder="Destination"/>
+    <input id="routeMiles" type="number" placeholder="Miles"/>
+    <input id="rate" type="number" placeholder="Rate"/>
+    <input id="notes" placeholder="Notes"/>
+
+    <button class="action" onclick="addRoute()">Save Route</button>
+  </div>
+
+  <div class="card">
+    <h3>Route Board</h3>
+    <table>
+      <tbody id="routeTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- LOADS -->
+<div id="loads" class="hidden">
+  <div class="card">
+    <h3>Add Load</h3>
+
+    <input id="loadName" placeholder="Load Name"/>
+    <input id="loadPay" type="number" placeholder="Pay"/>
+    <input id="loadMiles" type="number" placeholder="Miles"/>
+
+    <button class="action" onclick="addLoad()">Save Load</button>
+  </div>
+
+  <div class="card">
+    <table>
+      <tbody id="loadTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- DRIVERS -->
+<div id="drivers" class="hidden">
+  <div class="card">
+    <h3>Add Driver</h3>
+    <input id="driverName" placeholder="Driver Name"/>
+    <button class="action" onclick="addDriver()">Add Driver</button>
+  </div>
+
+  <div class="card">
+    <ul id="driverList"></ul>
+  </div>
+</div>
+
+<!-- FUEL -->
+<div id="fuel" class="hidden">
+  <div class="card">
+    <h3>Add Fuel</h3>
+
+    <input id="gallons" type="number" placeholder="Gallons"/>
+    <input id="price" type="number" placeholder="Cost"/>
+    <input id="odometer" type="number" placeholder="Odometer"/>
+
+    <button class="action" onclick="addFuel()">Save Fuel</button>
+  </div>
+</div>
+
+<!-- EARNINGS -->
+<div id="earnings" class="hidden">
+  <div class="card">
+    <h2>Profit Report</h2>
+    <p>Revenue: $<span id="rev">0</span></p>
+    <p>Fuel Cost: $<span id="fuelCost">0</span></p>
+    <p>Net: $<span id="net">0</span></p>
+    <p>CPM: $<span id="cpm">0</span></p>
+  </div>
+</div>
+
+</div>
+
+<script>
+
+/* DATA */
+let routes = JSON.parse(localStorage.getItem("routes")) || [];
+let loads = JSON.parse(localStorage.getItem("loads")) || [];
+let drivers = JSON.parse(localStorage.getItem("drivers")) || [];
+let fuel = JSON.parse(localStorage.getItem("fuel")) || [];
+
+/* NAV */
+function show(tab){
+  ["dashboard","routes","loads","drivers","fuel","earnings"].forEach(t=>{
+    document.getElementById(t).classList.add("hidden");
+  });
+  document.getElementById(tab).classList.remove("hidden");
+  updateAll();
+}
+
+/* ROUTES */
+function addRoute(){
+  routes.push({
+    origin: origin.value,
+    destination: destination.value,
+    miles: Number(routeMiles.value),
+    rate: Number(rate.value),
+    notes: notes.value
+  });
+
+  localStorage.setItem("routes", JSON.stringify(routes));
+  renderRoutes();
+  updateAll();
+}
+
+function renderRoutes(){
+  routeTable.innerHTML = routes.map((r,i)=>`
+    <tr>
+      <td>${r.origin} → ${r.destination}</td>
+      <td>${r.miles}</td>
+      <td>$${r.rate}</td>
+      <td>
+        <button onclick="saveRouteAsLoad(${i})">Load</button>
+        <button onclick="openMap(${i})">Map</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+/* ROUTE → LOAD */
+function saveRouteAsLoad(i){
+  const r = routes[i];
+
+  loads.push({
+    name: `${r.origin} → ${r.destination}`,
+    pay: r.rate,
+    miles: r.miles
+  });
+
+  localStorage.setItem("loads", JSON.stringify(loads));
+  renderLoads();
+  updateAll();
+}
+
+/* MAP */
+function openMap(i){
+  const r = routes[i];
+  window.open(
+    `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(r.origin)}&destination=${encodeURIComponent(r.destination)}`
+  );
+}
+
+/* LOADS */
+function addLoad(){
+  loads.push({
+    name: loadName.value,
+    pay: Number(loadPay.value),
+    miles: Number(loadMiles.value)
+  });
+
+  localStorage.setItem("loads", JSON.stringify(loads));
+  renderLoads();
+  updateAll();
+}
+
+function renderLoads(){
+  loadTable.innerHTML = loads.map(l=>
+    `<tr><td>${l.name}</td><td>$${l.pay}</td><td>${l.miles}</td></tr>`
+  ).join("");
+}
+
+/* DRIVERS */
+function addDriver(){
+  drivers.push(driverName.value);
+  localStorage.setItem("drivers", JSON.stringify(drivers));
+  renderDrivers();
+}
+
+function renderDrivers(){
+  driverList.innerHTML = drivers.map(d=>`<li>${d}</li>`).join("");
+}
+
+/* FUEL */
+function addFuel(){
+  fuel.push({
+    gallons: Number(gallons.value),
+    price: Number(price.value),
+    odo: Number(odometer.value)
+  });
+
+  localStorage.setItem("fuel", JSON.stringify(fuel));
+  updateAll();
+}
+
+/* EARNINGS */
+function updateAll(){
+
+  let revenue = loads.reduce((a,b)=>a+b.pay,0);
+  let fuelCost = fuel.reduce((a,b)=>a+b.price,0);
+  let miles = loads.reduce((a,b)=>a+b.miles,0);
+
+  let net = revenue - fuelCost;
+  let cpm = miles ? fuelCost / miles : 0;
+
+  tLoads.innerText = loads.length;
+  tDrivers.innerText = drivers.length;
+  tFuel.innerText = fuelCost.toFixed(2);
+  tEarn.innerText = net.toFixed(2);
+
+  rev.innerText = revenue.toFixed(2);
+  document.getElementById("fuelCost").innerText = fuelCost.toFixed(2);
+  net.innerText = net.toFixed(2);
+  cpm.innerText = cpm.toFixed(2);
+}
+
+/* INIT */
+renderRoutes();
+renderLoads();
+renderDrivers();
+updateAll();
+
+</script>
+
+</body>
+</html>
