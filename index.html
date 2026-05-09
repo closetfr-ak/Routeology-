@@ -1,5 +1,4 @@
-
-<!DOCTYPE html>
+<! DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -237,6 +236,7 @@ button{
 </head>
 
 <body>
+<div id="dashboardTop"></div>
 
 <!-- SIDEBAR -->
 
@@ -246,23 +246,28 @@ button{
     DispatchFlow
     </div>
 
-    <div class="nav-item">
+    <div class="nav-item"
+    onclick="scrollToSection('dashboardTop')">
     Dashboard
     </div>
 
-    <div class="nav-item">
+    <div class="nav-item"
+    onclick="scrollToSection('loadsSection')">
     Loads
     </div>
 
-    <div class="nav-item">
+    <div class="nav-item"
+    onclick="openFuelTracker()">
     Fuel
     </div>
 
-    <div class="nav-item">
+    <div class="nav-item"
+    onclick="openDrivers()">
     Drivers
     </div>
 
-    <div class="nav-item">
+    <div class="nav-item"
+    onclick="openSettings()">
     Settings
     </div>
 
@@ -319,7 +324,7 @@ button{
 
     <!-- ADD LOAD -->
 
-    <div class="card">
+    <div class="card" id="newLoadSection">
 
         <div class="section-title">
         Add New Load
@@ -403,7 +408,7 @@ button{
 
     <!-- SAVED LOADS -->
 
-    <div class="card">
+    <div class="card" id="loadsSection">
 
         <div class="section-title">
         Saved Loads
@@ -418,10 +423,50 @@ button{
 <!-- FLOATING BUTTON -->
 
 <div class="floating-btn"
-onclick="window.scrollTo({top:0,behavior:'smooth'})">
+onclick="scrollToSection('newLoadSection')">
 +
 </div>
 
+function scrollToSection(id){
+
+    document.getElementById(id)
+    .scrollIntoView({
+        behavior:"smooth"
+    });
+}
+
+function openFuelTracker(){
+
+    alert(
+    "Fuel tracker module coming next."
+    );
+}
+
+function openDrivers(){
+
+    alert(
+    "Driver management coming next."
+    );
+}
+
+function openSettings(){
+
+    const confirmReset =
+    confirm(
+    "Clear all saved loads?"
+    );
+
+    if(confirmReset){
+
+        localStorage.removeItem(
+        "dispatchLoads"
+        );
+
+        renderLoads();
+
+        updateStats();
+    }
+}
 <script>
 
 /* GENERATE DISPATCH */
