@@ -33,6 +33,43 @@ body {
   border-radius: 8px;
   cursor: pointer;
 }
+.menu-toggle{
+  display:none;
+  position:fixed;
+  top:10px;
+  left:10px;
+  z-index:1000;
+  background:#38bdf8;
+  border:none;
+  padding:10px;
+  border-radius:8px;
+}
+
+@media (max-width:768px){
+
+  .menu-toggle{
+    display:block;
+  }
+
+  .sidebar{
+    position:fixed;
+    left:-250px;
+    top:0;
+    width:220px;
+    height:100%;
+    transition:.3s;
+    z-index:999;
+  }
+
+  .sidebar.active{
+    left:0;
+  }
+
+  .main{
+    margin-left:0 !important;
+    padding-top:60px;
+  }
+}
 
 /* MAIN */
 .main {
@@ -100,7 +137,9 @@ td, th {
 <body>
 
 <!-- SIDEBAR -->
-<div class="sidebar">
+<button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+<div class="sidebar" id="sidebar">
   <button class="nav-btn" onclick="show('dashboard')">Dashboard</button>
   <button class="nav-btn" onclick="show('routes')">Routes 🗺️</button>
   <button class="nav-btn" onclick="show('loads')">Loads 🚚</button>
@@ -220,17 +259,30 @@ function show(tab){
   updateAll();
 }
 
+function toggleSidebar(){
+  document.getElementById("sidebar")
+    .classList.toggle("active");
+}
+
 /* ROUTES */
 function addRoute(){
+
+  const originInput = document.getElementById("origin");
+  const destinationInput = document.getElementById("destination");
+  const milesInput = document.getElementById("routeMiles");
+  const rateInput = document.getElementById("rate");
+  const notesInput = document.getElementById("notes");
+
   routes.push({
-    origin: origin.value,
-    destination: destination.value,
-    miles: Number(routeMiles.value),
-    rate: Number(rate.value),
-    notes: notes.value
+    origin: originInput.value,
+    destination: destinationInput.value,
+    miles: Number(milesInput.value),
+    rate: Number(rateInput.value),
+    notes: notesInput.value
   });
 
   localStorage.setItem("routes", JSON.stringify(routes));
+
   renderRoutes();
   updateAll();
 }
@@ -244,24 +296,46 @@ function renderRoutes(){
       <td>
         <button onclick="saveRouteAsLoad(${i})">Load</button>
         <button onclick="openMap(${i})">Map</button>
+        <button onclick="deleteRoute(${i})">Delete</button>
       </td>
     </tr>
   `).join("");
 }
 
+function deleteRoute(i){
+
+  if (!confirm("Delete this route?")) return;
+
+  routes.splice(i, 1);
+
+  localStorage.setItem("routes", JSON.stringify(routes));
+
+  renderRoutes();
+  updateAll();
+}
+
 /* ROUTE → LOAD */
 function saveRouteAsLoad(i){
+
   const r = routes[i];
 
+  if (!r) {
+    alert("Route not found");
+    return;
+  }
+
   loads.push({
-    name: `${r.origin} → ${r.destination}`,
-    pay: r.rate,
-    miles: r.miles
+    name: `${r.origin || "Unknown"} → ${r.destination || "Unknown"}`,
+    pay: Number(r.rate || 0),
+    miles: Number(r.miles || 0)
   });
 
   localStorage.setItem("loads", JSON.stringify(loads));
+
   renderLoads();
   updateAll();
+
+  alert("Saved to Loads");
 }
 
 /* MAP */
