@@ -94,6 +94,15 @@ input{
   font-size:15px;
 }
 
+.form-row{
+  display:flex;
+  gap:10px;
+}
+
+.form-row input{
+  flex:1;
+}
+
 /* BUTTONS */
 button.action{
   background:#38bdf8;
@@ -177,6 +186,11 @@ table button{
     width:100%;
     margin-bottom:6px;
   }
+
+  .form-row{
+    flex-direction:column;
+  }
+
 }
 </style>
 </head>
@@ -238,15 +252,20 @@ table button{
 
 <input id="loadName" placeholder="Load Name"/>
 
-<input id="loadPay" type="number" placeholder="Rate ($)"/>
+<div class="form-row">
+  <input id="loadMiles" type="number" placeholder="Miles"/>
+  <input id="loadPay" type="number" placeholder="Rate"/>
+</div>
 
-<input id="loadMiles" type="number" placeholder="Miles"/>
+<div class="form-row">
+  <input id="puDate" type="date"/>
+  <input id="puTime" type="time"/>
+</div>
 
-<input id="puDate" type="date"/>
-<input id="puTime" type="time"/>
-
-<input id="delDate" type="date"/>
-<input id="delTime" type="time"/>
+<div class="form-row">
+  <input id="delDate" type="date"/>
+  <input id="delTime" type="time"/>
+</div>
 
 <input id="notes" placeholder="Notes / Customer"/>
 
