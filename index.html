@@ -227,7 +227,7 @@ function renderRoutes() {
       <td>$${r.rate}</td>
       <td>
         <button onclick="copyRoute(${i})">Copy</button>
-        <button onclick="addLoad()">Save Route</button>
+        <button onclick="saveRouteAsLoad(${i})">Save as Load</button>
         <button onclick="openMap(${i})">Map</button>
       </td>
     </tr>
@@ -367,16 +367,6 @@ renderDrivers();
 renderFuel();
 renderRoutes();
 updateAll();
-
-function addLoad() {
-  alert("button works"); // test first
-
-  const name = document.getElementById("loadName").value;
-  const pay = document.getElementById("loadPay").value;
-  const miles = document.getElementById("loadMiles").value;
-
-  console.log(name, pay, miles);
-}
 
 </script>
 
