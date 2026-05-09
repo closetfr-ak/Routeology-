@@ -228,6 +228,7 @@ function renderRoutes() {
       <td>$${r.rate}</td>
       <td>
         <button onclick="copyRoute(${i})">Copy</button>
+        <button onclick="addLoad()">Save Load</button>
         <button onclick="openMap(${i})">Map</button>
       </td>
     </tr>
@@ -275,14 +276,24 @@ function show(tab){
 }
 
 /* LOADS */
-function addLoad(){
+function addLoad() {
+  const name = document.getElementById("loadName")?.value;
+  const pay = document.getElementById("loadPay")?.value;
+  const miles = document.getElementById("loadMiles")?.value;
+
+  if (!name || !pay || !miles) {
+    alert("Missing load info");
+    return;
+  }
+
   loads.push({
-    name: loadName.value,
-    pay: Number(loadPay.value),
-    miles: Number(loadMiles.value)
+    name,
+    pay: Number(pay),
+    miles: Number(miles)
   });
 
   localStorage.setItem("loads", JSON.stringify(loads));
+
   renderLoads();
   updateAll();
 }
