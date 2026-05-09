@@ -236,11 +236,29 @@ table button{
   <div class="card">
     <h3>Add Load</h3>
 
-    <input id="loadName" placeholder="Load Name"/>
-    <input id="loadPay" type="number" placeholder="Pay"/>
-    <input id="loadMiles" type="number" placeholder="Miles"/>
+<input id="loadName" placeholder="Load Name"/>
 
-    <button class="action" onclick="addLoad()">Save Load</button>
+<input id="loadPay" type="number" placeholder="Rate ($)"/>
+
+<input id="loadMiles" type="number" placeholder="Miles"/>
+
+<input id="puDate" type="date"/>
+<input id="puTime" type="time"/>
+
+<input id="delDate" type="date"/>
+<input id="delTime" type="time"/>
+
+<input id="notes" placeholder="Notes / Customer"/>
+
+<select id="loadStatus">
+  <option>Booked</option>
+  <option>In Transit</option>
+  <option>Delivered</option>
+</select>
+
+<button class="action" onclick="addLoad()">
+  Save Load
+</button>
   </div>
 
   <div class="card">
@@ -268,11 +286,13 @@ table button{
   <div class="card">
     <h3>Add Fuel</h3>
 
+    <input id="fuelDate" type="date"/>
     <input id="gallons" type="number" placeholder="Gallons"/>
-    <input id="price" type="number" placeholder="Cost"/>
+    <input id="price" type="number" placeholder="Total Fuel Cost"/>
     <input id="odometer" type="number" placeholder="Odometer"/>
-
-    <button class="action" onclick="addFuel()">Save Fuel</button>
+    <input id="fuelMiles" type="number" placeholder="Trip Miles"/>
+    
+        <button class="action" onclick="addFuel()">Save Fuel</button>
   </div>
 </div>
 
@@ -395,21 +415,69 @@ function openMap(i){
 
 /* LOADS */
 function addLoad(){
+
   loads.push({
-    name: loadName.value,
-    pay: Number(loadPay.value),
-    miles: Number(loadMiles.value)
+    name: document.getElementById("loadName").value,
+    pay: Number(document.getElementById("loadPay").value),
+    miles: Number(document.getElementById("loadMiles").value),
+
+    puDate: document.getElementById("puDate").value,
+    puTime: document.getElementById("puTime").value,
+
+    delDate: document.getElementById("delDate").value,
+    delTime: document.getElementById("delTime").value,
+
+    notes: document.getElementById("notes").value,
+    status: document.getElementById("loadStatus").value
   });
 
   localStorage.setItem("loads", JSON.stringify(loads));
+
   renderLoads();
   updateAll();
 }
 
 function renderLoads(){
-  loadTable.innerHTML = loads.map(l=>
-    `<tr><td>${l.name}</td><td>$${l.pay}</td><td>${l.miles}</td></tr>`
-  ).join("");
+
+  loadTable.innerHTML = loads.map((l,i)=>`
+
+    <tr>
+      <td>${l.name}</td>
+      <td>$${l.pay}</td>
+      <td>${l.miles}</td>
+
+      <td>
+        ${l.puDate || "-"}<br>
+        ${l.puTime || ""}
+      </td>
+
+      <td>
+        ${l.delDate || "-"}<br>
+        ${l.delTime || ""}
+      </td>
+
+      <td>${l.status || "Booked"}</td>
+
+      <td>
+        <button onclick="deleteLoad(${i})">
+          Delete
+        </button>
+      </td>
+    </tr>
+
+  `).join("");
+}
+
+function deleteLoad(i){
+
+  if(!confirm("Delete load?")) return;
+
+  loads.splice(i,1);
+
+  localStorage.setItem("loads", JSON.stringify(loads));
+
+  renderLoads();
+  updateAll();
 }
 
 /* DRIVERS */
@@ -425,13 +493,33 @@ function renderDrivers(){
 
 /* FUEL */
 function addFuel(){
+
+  const gallons =
+    Number(document.getElementById("gallons").value);
+
+  const miles =
+    Number(document.getElementById("fuelMiles").value);
+
   fuel.push({
-    gallons: Number(gallons.value),
-    price: Number(price.value),
-    odo: Number(odometer.value)
+
+    date: document.getElementById("fuelDate").value,
+
+    gallons,
+
+    price: Number(document.getElementById("price").value),
+
+    odo: Number(document.getElementById("odometer").value),
+
+    miles,
+
+    mpg: miles && gallons
+      ? (miles / gallons).toFixed(2)
+      : 0
   });
 
   localStorage.setItem("fuel", JSON.stringify(fuel));
+
+  renderFuel();
   updateAll();
 }
 
@@ -443,7 +531,11 @@ function updateAll(){
   let miles = loads.reduce((a,b)=>a+b.miles,0);
 
   let net = revenue - fuelCost;
-  let cpm = miles ? fuelCost / miles : 0;
+  let operatingCost = fuelCost;
+
+  let cpm = miles
+  ? operatingCost / miles
+  : 0;
 
   tLoads.innerText = loads.length;
   tDrivers.innerText = drivers.length;
