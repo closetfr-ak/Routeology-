@@ -428,47 +428,6 @@ onclick="scrollToSection('newLoadSection')">
 +
 </div>
 
-function scrollToSection(id){
-
-    document.getElementById(id)
-    .scrollIntoView({
-        behavior:"smooth"
-    });
-}
-
-function openFuelTracker(){
-
-    alert(
-    "Fuel tracker module coming next."
-    );
-}
-
-function openDrivers(){
-
-    alert(
-    "Driver management coming next."
-    );
-}
-
-function openSettings(){
-
-    const confirmReset =
-    confirm(
-    "Clear all saved loads?"
-    );
-
-    if(confirmReset){
-
-        localStorage.removeItem(
-        "dispatchLoads"
-        );
-
-        renderLoads();
-
-        updateStats();
-    }
-}
-
 <script>
 
 /* GENERATE DISPATCH */
@@ -680,6 +639,46 @@ renderLoads();
 
 updateStats();
 
+function scrollToSection(id){
+
+    document.getElementById(id)
+    .scrollIntoView({
+        behavior:"smooth"
+    });
+}
+
+function openFuelTracker(){
+
+    alert(
+    "Fuel tracker module coming next."
+    );
+}
+
+function openDrivers(){
+
+    alert(
+    "Driver management coming next."
+    );
+}
+
+function openSettings(){
+
+    const confirmReset =
+    confirm(
+    "Clear all saved loads?"
+    );
+
+    if(confirmReset){
+
+        localStorage.removeItem(
+        "dispatchLoads"
+        );
+
+        renderLoads();
+
+        updateStats();
+    }
+}
 </script>
 
 </body>
